@@ -1,124 +1,114 @@
-# include "doctest.h"
-# include "card.hpp"
-# include "game.hpp"
-# include "player.hpp"
-# include <iostream>
-# include <stdexcept>
-# include <chrono>
+#include <iostream>
+#include "doctest.h"
+#include "sources/player.hpp"
+#include "sources/game.hpp"
+#include "sources/card.hpp"
+#include <ctime>
+#include <bits/stdc++.h>
+
+using namespace std;
+using namespace ariel;
 
 
-//***************cards checks********************
-TEST_CASE("inisilize card:"){
-// 1. check if -> card val negative
 
-// 2. check if -> card val < JOKER
+TEST_CASE("check time off the game: "){
+    clock_t start, end;
+    start = clock();
+    Player p1("Alice");
+    Player p2("Bob");
+    Game game(p1, p2);
+    end = clock();
+    double timeTotal = double(end - start) / CLOCKS_PER_SEC;
+    CHECK(timeTotal < 5.0); // Check if total time is moreover
 
-// 3. check the constractor
+}
+//***************game functions checks********************
+TEST_CASE("CHECK if void function "){
 
-// 4. check if card can be Reversed
+    Player p1("Alice");
+    Player p2("Bob");
+    Game game(p1,p2);
+    
+    CHECK(std::is_void<decltype(game.playAll())>::value);
+    CHECK(std::is_void<decltype(game.playTurn())>::value);
+    CHECK(std::is_void<decltype(game.printLastTurn())>::value);
+    CHECK(std::is_void<decltype(game.printLog())>::value);
+    CHECK(std::is_void<decltype(game.printStats())>::value);
+    CHECK(std::is_void<decltype(game.printWiner())>::value);
+
+}
+
+
+TEST_CASE("check printWiner"){
+   
+    // check if -> winner=p1.name||p2.name
+    
+    Player p1("Alice");
+    Player p2("Bob");
+    Game game(p1, p2);
+    game.playAll();
+    string winner;
+    if (p1.cardesTaken()>p2.cardesTaken()){
+        winner = p1.getName();
+    }
+    else
+        winner = p2.getName();
+    CHECK(game.getWinner() == winner);
     
 }
 
-//***************player checks********************
-TEST_CASE("check cardesTaken"){
-// 1. check -> card taken time
+TEST_CASE("CHECK the value of the cards"){
+    Player p1("Alice");
+    Player p2("Bob");
+    Game game(p1,p2);
+    int min = 14, max = 0;
+    bool negative = false;
 
-// 2. check -> the type of the function
+    vector<card> deck = game.getDeck();
 
-// 3.check duplicates cards
-    
-}
+    for (const auto& card : deck) {
+        if (card.getVal() < min) {
+            min = card.getVal();
+        }
+        if (card.getVal() > max) {
+            max = card.getVal();
+        }
+    }
 
-TEST_CASE("size stack1"){
-// 1. check if -> size stack1!= retutrn int
-
-// 2. check if -> size stack1 > max
-
-// 3. check if -> size stack1 is positive
-
-}
-TEST_CASE("size stack2"){
-// 1. check if -> size stack2!= retutrn int
-
-// 2. check if -> size stack2 > max
-
-// 3. check if -> size stack2 is positive
+    CHECK(min == 1);
+    CHECK(max == 13);
+    CHECK(negative == false);
 
 }
-TEST_CASE("if player name is string"){
-// 1. check if -> player.name!=inctanceof(string) player 1
+TEST_CASE("CHECK throws:"){
+    Player p1("Alice");
+    Player p2("Bob");
+    Game game(p1,p2);
 
-// 2. check also to player 2
-}
-TEST_CASE("inisilize player:"){
-    // 1. check if -> p1 is instance of player
-
-    // 2. check if -> p2 is instance of player
-}
-//***************game checks********************
-TEST_CASE("check playAll"){
-    // 1. check if -> printlog!= retutrn void
-    CHECK(std::is_void<decltype(playAll())>::value);
-        
-}
-TEST_CASE("check printLog"){
-    // 1. check if -> printlog!= retutrn void
-    CHECK(std::is_void<decltype(printLog())>::value);
-
-}
-TEST_CASE("check printStats"){
-    // 1. check if -> winner!= retutrn void
-   CHECK(std::is_void<decltype(printStats())>::value);
-
-}
-TEST_CASE("printWiner"){
-    // 1. check if -> winner!= retutrn void
-    CHECK(std::is_void<decltype(printWiner())>::value);
-
-    // 2. check if -> winner=p1.name||p2.name
-    
-
-}
-TEST_CASE("check playTurn"){
-    // 1. check if playturn repeat to the same person
-        
-}
-TEST_CASE("check Reversed cards"){
-// 1. check if -> some are reversed in one cartridge and not in the other
-
-// 2.check if card can be Reversed
-}
-TEST_CASE("4 cards of each type"){
-
-}
-TEST_CASE("ACE card is the smaller"){
-
-}
-TEST_CASE("KING is the bigger"){
-
+    CHECK_NOTHROW(p1.cardesTaken());
+    CHECK_NOTHROW(p1.stacksize());
+    CHECK_NOTHROW(game.playAll());
+    CHECK_NOTHROW(game.playTurn());
+    CHECK_NOTHROW(game.printLastTurn());
+    CHECK_NOTHROW(game.printLog());
+    CHECK_NOTHROW(game.printStats());
+    CHECK_NOTHROW(game.shuffleDeck());
+    CHECK_NOTHROW(game.printWiner());
 }
 
+TEST_CASE("initialize Stack:")
+{
+   
+    Player p1("Alice");
+    Player p2("Bob");
 
-
-TEST_CASE("2 player exacly"){
-
-}
-TEST_CASE("A tie between the opposite cards"){
-
-}
-TEST_CASE("HALF exacly"){
-
-}
-
-
-TEST_CASE("constructor player2"){
-
-}
-
-
-TEST_CASE("not shuffle"){
-
-}
-TEST_CASE("checkMaincardpile"){
+    Game game(p1, p2);
+    CHECK(p1.stacksize() == 26);
+    CHECK(p2.stacksize() == 26);
+    CHECK(p2.stacksize() + p1.stacksize()==52);
+    CHECK(p1.stacksize()<52);
+    CHECK(p2.stacksize()<52);
+    CHECK(p1.stacksize()>0);
+    CHECK(p2.stacksize()>0);
 
 }
